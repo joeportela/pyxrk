@@ -1,19 +1,11 @@
-[build-system]
-requires = ["maturin>=1.0,<2.0"]
-build-backend = "maturin"
-
 [project]
 name = "python-xrk"
 requires-python = ">=3.7"
 readme = "README.md"
 classifiers = [
-    "Programming Language :: Rust",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
-
-[tool.maturin]
-features = ["pyo3/extension-module"]
 
 [tool.black]
 line-length = 88
