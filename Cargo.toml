@@ -10,5 +10,6 @@ name = "python_xrk"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = "0.18.3"
+chrono = "0.4"
+pyo3 = { version = "0.18.3", features = ["chrono"]}
 xdrk = { git = "https://github.com/bmc-labs/xdrk" }
