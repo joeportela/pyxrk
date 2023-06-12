@@ -12,4 +12,5 @@ crate-type = ["cdylib"]
 [dependencies]
 chrono = "0.4"
 pyo3 = { version = "0.18.3", features = ["chrono"]}
+# The current version utilizes the AiM library from 2020-01-24
 xdrk = { git = "https://github.com/bmc-labs/xdrk" }
