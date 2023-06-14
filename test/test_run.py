@@ -3,7 +3,7 @@ import datetime
 import pytest
 import pyxrk
 
-TEST_FILE = "./testdata/test.xrk"
+TEST_FILE = "./test/data/test.xrk"
 
 
 def test_load_run():
