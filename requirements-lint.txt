@@ -1,5 +1,0 @@
-autoflake
-black
-isort
-mypy
-ruff

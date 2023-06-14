@@ -410,7 +410,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "python-xrk"
+name = "pyxrk"
 version = "0.1.0"
 dependencies = [
  "chrono",
