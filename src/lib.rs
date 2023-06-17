@@ -1,3 +1,4 @@
+mod channel;
 mod lap;
 mod run;
 use pyo3::prelude::*;

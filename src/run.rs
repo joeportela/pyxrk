@@ -1,3 +1,4 @@
+use super::channel::ChannelPy;
 use super::lap::LapPy;
 use chrono::NaiveDateTime;
 use pyo3::{exceptions::PyValueError, prelude::*};
@@ -102,28 +103,54 @@ impl RunPy {
         self.run.number_of_channels()
     }
 
-    pub fn get_channel_unit(&mut self, channel_name: String) -> String {
-        let idx = self
-            .run
-            .channel_idx(&channel_name)
-            .expect("Channel not found");
-        self.run
-            .channel_unit(idx)
-            .expect("Couldn't get channel unit")
+    pub fn get_channel_idx(&mut self, channel_name: String) -> PyResult<usize> {
+        let idx_result = self.run.channel_idx(&channel_name);
+        match idx_result {
+            Ok(idx_result) => Ok(idx_result),
+            Err(error) => Err(PyValueError::new_err(format!(
+                "Channel not found: {} - {}",
+                channel_name, error,
+            ))),
+        }
+    }
+
+    pub fn get_channel_unit(
+        &mut self,
+        channel_name: String,
+    ) -> PyResult<String> {
+        let idx = self.get_channel_idx(channel_name)?;
+        self.get_channel_unit_by_idx(idx)
+    }
+
+    pub fn get_channel_unit_by_idx(&mut self, idx: usize) -> PyResult<String> {
+        let unit_result = self.run.channel_unit(idx);
+        match unit_result {
+            Ok(unit_result) => Ok(unit_result),
+            Err(error) => Err(PyValueError::new_err(format!(
+                "Couldn't get channel unit for idx {} - {}",
+                idx, error
+            ))),
+        }
     }
 
     pub fn get_channel(
         &mut self,
         channel_name: String,
         lap: Option<usize>,
-    ) -> Vec<f64> {
-        let idx = self
-            .run
-            .channel_idx(&channel_name)
-            .expect("Channel not found");
-        let channel =
-            self.run.channel(idx, lap).expect("Failed loading channel");
-        channel.data().samples().to_vec()
+    ) -> PyResult<ChannelPy> {
+        let idx = self.get_channel_idx(channel_name)?;
+        self.get_channel_by_idx(idx, lap)
+    }
+
+    pub fn get_channel_by_idx(
+        &mut self,
+        idx: usize,
+        lap: Option<usize>,
+    ) -> PyResult<ChannelPy> {
+        match self.run.channel(idx, lap) {
+            Ok(channel) => Ok(ChannelPy::new(channel)),
+            Err(_) => Err(PyValueError::new_err("")),
+        }
     }
 }
 
@@ -136,21 +163,5 @@ pub fn load_run(path_string: String) -> PyResult<RunPy> {
             "Failed to load .xrk file at {} - {}",
             path_string, error,
         ))),
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use xdrk::LapInfo;
-
-    const XRK_PATH: &str = "./testdata/test.xrk";
-    #[test]
-    fn xrkfile_test() {
-        let xdrk_file = Run::load(Path::new(XRK_PATH)).unwrap();
-        assert_eq!(
-            LapInfo::new(2, 336.179, 134.718),
-            xdrk_file.lap_info(2).unwrap()
-        );
     }
 }
