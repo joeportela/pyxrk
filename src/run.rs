@@ -1,5 +1,4 @@
 use super::channel::ChannelPy;
-use super::lap::LapPy;
 use chrono::NaiveDateTime;
 use pyo3::{exceptions::PyValueError, prelude::*};
 use std::{collections::HashMap, path::Path, sync::Arc};
@@ -66,42 +65,6 @@ impl RunPy {
         self.run.datetime().expect("Failure getting datetime")
     }
 
-    ///
-    ///
-    /// Lap functions
-    ///
-    ///
-    pub fn get_lap(&mut self, lap_idx: usize) -> LapPy {
-        let lap = self.run.lap(lap_idx).expect("Could not load Lap");
-        LapPy::new(lap)
-    }
-
-    pub fn get_all_laps(&mut self) -> Vec<LapPy> {
-        let len = self.lap_count();
-        let mut laps = Vec::with_capacity(len);
-        for lap_idx in 0..len {
-            laps.push(self.get_lap(lap_idx))
-        }
-        laps
-    }
-
-    pub fn get_lap_test(&mut self, lap_idx: usize) {
-        // - 11 to skip gps channels (temporary)
-        let channel_count = self.channels_count() - 11;
-        println!("Channels {}", channel_count);
-        for channel_idx in 0..channel_count {
-            if channel_idx == 23 || channel_idx == 39 || channel_idx == 40 {
-                continue;
-            }
-            println!(
-                "channel data for lap {} channel {} {}",
-                lap_idx,
-                channel_idx,
-                self.run.channel_names()[channel_idx]
-            );
-            self.run.lap_channel_samples(lap_idx, channel_idx).unwrap();
-        }
-    }
     ///
     ///
     /// Channel functions
