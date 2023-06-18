@@ -2,12 +2,26 @@ use super::channel::ChannelPy;
 use super::lap::LapPy;
 use chrono::NaiveDateTime;
 use pyo3::{exceptions::PyValueError, prelude::*};
-use std::{path::Path, sync::Arc};
+use std::{collections::HashMap, path::Path, sync::Arc};
 use xdrk::Run;
 
 #[pyclass(name = "Run")]
 pub struct RunPy {
     run: Arc<Run>,
+    channel_names: HashMap<String, usize>,
+}
+
+impl RunPy {
+    pub fn new(run: Arc<Run>) -> Self {
+        // Setup a channel name to index mapping
+        // Most of the operations are based on index args,
+        // so we'll be doing a lot of lookups.
+        let mut channel_names: HashMap<String, usize> = HashMap::new();
+        for i in 0..run.number_of_channels() {
+            channel_names.insert(run.channel_name(i).unwrap(), i);
+        }
+        Self { run, channel_names }
+    }
 }
 
 #[pymethods]
@@ -104,12 +118,12 @@ impl RunPy {
     }
 
     pub fn get_channel_idx(&self, channel_name: &str) -> PyResult<usize> {
-        let idx_result = self.run.channel_idx(channel_name);
-        match idx_result {
-            Ok(idx_result) => Ok(idx_result),
-            Err(error) => Err(PyValueError::new_err(format!(
-                "Channel not found: {} - {}",
-                channel_name, error,
+        let result = self.channel_names.get(channel_name);
+        match result {
+            Some(idx) => Ok(*idx),
+            None => Err(PyValueError::new_err(format!(
+                "Channel not found: {}",
+                channel_name,
             ))),
         }
     }
@@ -155,7 +169,7 @@ impl RunPy {
 pub fn load_run(path_string: String) -> PyResult<RunPy> {
     let xdrk_file_result = Run::load(Path::new(&path_string));
     match xdrk_file_result {
-        Ok(xdrk_file) => Ok(RunPy { run: xdrk_file }),
+        Ok(xdrk_file) => Ok(RunPy::new(xdrk_file)),
         Err(error) => Err(PyValueError::new_err(format!(
             "Failed to load .xrk file at {} - {}",
             path_string, error,

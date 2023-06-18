@@ -7,7 +7,12 @@ pub struct ChannelPy {
 }
 
 #[pymethods]
-impl ChannelPy {}
+impl ChannelPy {
+    pub fn data(&mut self) -> Vec<f64> {
+        self.channel.data().timestamps().to_vec()
+    }
+}
+
 impl ChannelPy {
     pub fn new(channel: Channel) -> Self {
         Self { channel }
