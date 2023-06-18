@@ -18,37 +18,37 @@ impl RunPy {
     ///
     ///
     #[getter]
-    pub fn lap_count(&mut self) -> usize {
+    pub fn lap_count(&self) -> usize {
         self.run.number_of_laps()
     }
 
     #[getter]
-    pub fn championship(&mut self) -> String {
+    pub fn championship(&self) -> String {
         self.run.championship().unwrap()
     }
 
     #[getter]
-    pub fn track(&mut self) -> String {
+    pub fn track(&self) -> String {
         self.run.track().unwrap()
     }
 
     #[getter]
-    pub fn venue_type(&mut self) -> String {
+    pub fn venue_type(&self) -> String {
         self.run.venue_type().unwrap()
     }
 
     #[getter]
-    pub fn vehicle(&mut self) -> String {
+    pub fn vehicle(&self) -> String {
         self.run.vehicle().unwrap()
     }
 
     #[getter]
-    pub fn racer(&mut self) -> String {
+    pub fn racer(&self) -> String {
         self.run.racer().unwrap()
     }
 
     #[getter]
-    pub fn datetime(&mut self) -> NaiveDateTime {
+    pub fn datetime(&self) -> NaiveDateTime {
         self.run.datetime().expect("Failure getting datetime")
     }
 
@@ -94,17 +94,17 @@ impl RunPy {
     ///
     ///
     #[getter]
-    pub fn channel_names(&mut self) -> Vec<String> {
+    pub fn channel_names(&self) -> Vec<String> {
         self.run.channel_names().to_vec()
     }
 
     #[getter]
-    pub fn channels_count(&mut self) -> usize {
+    pub fn channels_count(&self) -> usize {
         self.run.number_of_channels()
     }
 
-    pub fn get_channel_idx(&mut self, channel_name: String) -> PyResult<usize> {
-        let idx_result = self.run.channel_idx(&channel_name);
+    pub fn get_channel_idx(&self, channel_name: &str) -> PyResult<usize> {
+        let idx_result = self.run.channel_idx(channel_name);
         match idx_result {
             Ok(idx_result) => Ok(idx_result),
             Err(error) => Err(PyValueError::new_err(format!(
@@ -114,15 +114,12 @@ impl RunPy {
         }
     }
 
-    pub fn get_channel_unit(
-        &mut self,
-        channel_name: String,
-    ) -> PyResult<String> {
+    pub fn get_channel_unit(&self, channel_name: &str) -> PyResult<String> {
         let idx = self.get_channel_idx(channel_name)?;
         self.get_channel_unit_by_idx(idx)
     }
 
-    pub fn get_channel_unit_by_idx(&mut self, idx: usize) -> PyResult<String> {
+    pub fn get_channel_unit_by_idx(&self, idx: usize) -> PyResult<String> {
         let unit_result = self.run.channel_unit(idx);
         match unit_result {
             Ok(unit_result) => Ok(unit_result),
@@ -134,8 +131,8 @@ impl RunPy {
     }
 
     pub fn get_channel(
-        &mut self,
-        channel_name: String,
+        &self,
+        channel_name: &str,
         lap: Option<usize>,
     ) -> PyResult<ChannelPy> {
         let idx = self.get_channel_idx(channel_name)?;
@@ -143,7 +140,7 @@ impl RunPy {
     }
 
     pub fn get_channel_by_idx(
-        &mut self,
+        &self,
         idx: usize,
         lap: Option<usize>,
     ) -> PyResult<ChannelPy> {
