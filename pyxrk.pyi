@@ -1,6 +1,5 @@
-from collections.abc import Iterable, Iterator
-
 import datetime
+from collections.abc import Iterable, Iterator
 from typing import Tuple
 
 class ChannelDataIterator(Iterable):
