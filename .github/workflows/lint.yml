@@ -63,4 +63,4 @@ jobs:
         with:
           python-version: '3.x'
       - run: pip install mypy
-      - run: mypy maturin
+      - run: mypy .
