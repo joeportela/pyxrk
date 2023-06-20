@@ -72,7 +72,7 @@ jobs:
       - name: Install built wheel
         if: matrix.target == 'x64'
         run: |
-          pip install dist/${{ env.PACKAGE_NAME }}-*-cp310-*.whl --force-reinstall
+          pip install dist\${{ env.PACKAGE_NAME }}-*-cp310-*.whl --force-reinstall
           pip install pytest
           pytest -v
       - name: Upload wheels
@@ -100,7 +100,7 @@ jobs:
       - name: Install built wheel
         if: matrix.target == 'x86_64'
         run: |
-          pip install dist\${{ env.PACKAGE_NAME }}-*-cp310-*.whl --force-reinstall
+          pip install dist/${{ env.PACKAGE_NAME }}-*-cp310-*.whl --force-reinstall
           pip install pytest
           pytest -v
       - name: Upload wheels
