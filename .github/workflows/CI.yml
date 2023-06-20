@@ -17,12 +17,16 @@ on:
 permissions:
   contents: read
 
+env:
+  PACKAGE_NAME: pyxrk
+
 jobs:
   linux:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target: [x86_64, x86, aarch64, armv7, s390x, ppc64le]
+        target: ['x86_64']
+        # target: [x86_64, x86, aarch64, armv7, s390x, ppc64le]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -35,7 +39,13 @@ jobs:
           args: --release --out dist --find-interpreter
           sccache: 'true'
           manylinux: auto
-          before-script-linux: rpm -i test.rpm
+          before-script-linux: yum -y install libxml2-dev
+      - name: Install built wheel
+        if: matrix.target == 'x86_64'
+        run: |
+          pip install dist/${{ env.PACKAGE_NAME }}-*.whl --force-reinstall
+          pip install pytest
+          pytest -v
       - name: Upload wheels
         uses: actions/upload-artifact@v3
         with:
