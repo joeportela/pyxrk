@@ -1,2 +1,2 @@
-# python-xrk
+# pyxrk
 Python package for reading .xrk files

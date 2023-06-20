@@ -1,0 +1,16 @@
+[package]
+name = "pyxrk"
+version = "0.0.1"
+authors = ["Joe Portela <jportela14@gmail.com>"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "pyxrk"
+crate-type = ["cdylib"]
+
+[dependencies]
+chrono = "0.4"
+pyo3 = { version = "0.18.3", features = ["chrono"]}
+# The current version utilizes the AiM library from 2020-01-24
+xdrk = { git = "https://github.com/bmc-labs/xdrk" }
