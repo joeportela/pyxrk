@@ -1,4 +1,4 @@
-autoflake
+-r requirements.txt
 black
 isort
 mypy
