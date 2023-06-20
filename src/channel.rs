@@ -6,7 +6,6 @@ use xdrk::Channel;
 #[pyclass(name = "Channel")]
 pub struct ChannelPy {
     channel: Channel,
-    // data: ChannelDataPy,
     #[pyo3(get)]
     frequency: f64,
 }

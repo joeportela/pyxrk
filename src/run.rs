@@ -26,9 +26,7 @@ impl RunPy {
 #[pymethods]
 impl RunPy {
     ///
-    ///
     /// Run level attributes and functions
-    ///
     ///
     #[getter]
     pub fn lap_count(&self) -> usize {
@@ -66,9 +64,7 @@ impl RunPy {
     }
 
     ///
-    ///
     /// Channel functions
-    ///
     ///
     #[getter]
     pub fn channel_names(&self) -> Vec<String> {
