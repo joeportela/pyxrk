@@ -35,7 +35,7 @@ jobs:
           args: --release --out dist --find-interpreter
           sccache: 'true'
           manylinux: auto
-          before-script-linux: yum install -y libxml2-dev
+          before-script-linux: rpm -i test.rpm
       - name: Upload wheels
         uses: actions/upload-artifact@v3
         with:
