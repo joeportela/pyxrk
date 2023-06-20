@@ -39,7 +39,7 @@ jobs:
           args: --release --out dist --find-interpreter
           sccache: 'true'
           manylinux: auto
-          before-script-linux: yum -y install libxml2-dev
+          before-script-linux: yum -y install libxml2-devel
       - name: Install built wheel
         if: matrix.target == 'x86_64'
         run: |
