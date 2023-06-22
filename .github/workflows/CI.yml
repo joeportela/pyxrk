@@ -44,7 +44,7 @@ jobs:
         if: matrix.target == 'x86_64'
         run: |
           pip install dist/${{ env.PACKAGE_NAME }}-*-cp310-*.whl --force-reinstall
-          pip install -r requirements.txt
+          pip install . pytest
           pytest -v
       - name: Upload wheels
         uses: actions/upload-artifact@v3

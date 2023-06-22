@@ -13,6 +13,15 @@ classifiers = [
 ]
 dependencies = ['polars', 'pyarrow']
 
+[project.optional-dependencies]
+test = [
+    'black',
+    'isort',
+    'mypy',
+    'ruff',
+    'pytest',
+]
+
 [tool.maturin]
 features = ["pyo3/extension-module"]
 
