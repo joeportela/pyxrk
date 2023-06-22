@@ -1,1 +1,3 @@
 maturin[patchelf]
+polars
+pyarrow

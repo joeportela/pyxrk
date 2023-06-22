@@ -122,3 +122,8 @@ def test_combo_lap_channels():
         lap_oil_temp_sample_count += lap_count
 
     assert lap_oil_temp_sample_count == full_oil_temp_channel.sample_count()
+
+
+def test_dataframe():
+    run = pyxrk.load_run(TEST_FILE)
+    run.to_df()

@@ -1,6 +1,8 @@
 use super::channel::ChannelPy;
 use chrono::NaiveDateTime;
+use polars::prelude::*;
 use pyo3::{exceptions::PyValueError, prelude::*};
+use pyo3_polars::PyDataFrame;
 use std::{collections::HashMap, path::Path, sync::Arc};
 use xdrk::Run;
 
@@ -20,6 +22,27 @@ impl RunPy {
             channel_names.insert(run.channel_name(i).unwrap(), i);
         }
         Self { run, channel_names }
+    }
+
+    pub fn to_dataframe(&self) -> DataFrame {
+        // TODO do this by lap and add lap as a column
+
+        // This is the channel that we'll sync all the others with, its MagnetomX @ 50 Hz
+        // TODO make it configurable
+        let sync = self.get_channel_by_idx(0, None).unwrap();
+        let mut channels: Vec<ChannelPy> = Vec::new();
+        for channel_idx in 0..self.channels_count() {
+            let channel_result = self.get_channel_by_idx(channel_idx, None);
+            let channel = match channel_result {
+                Ok(channel) => channel,
+                Err(_e) => {
+                    // skip error channels - likely a channel with no data
+                    continue;
+                }
+            };
+            channels.push(channel.sync_with(&sync).unwrap());
+        }
+        DataFrame::new(channels).unwrap()
     }
 }
 
@@ -121,6 +144,10 @@ impl RunPy {
             Ok(channel) => Ok(ChannelPy::new(channel)),
             Err(_) => Err(PyValueError::new_err("")),
         }
+    }
+
+    pub fn to_df(&self) -> PyResult<PyDataFrame> {
+        Ok(PyDataFrame(self.to_dataframe()))
     }
 }
 

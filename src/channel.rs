@@ -1,5 +1,6 @@
 use std::{iter::Zip, vec};
 
+use polars::prelude::*;
 use pyo3::{exceptions::PyValueError, prelude::*};
 use xdrk::Channel;
 
@@ -60,6 +61,10 @@ impl ChannelPy {
         let frequency = channel.frequency();
         Self { channel, frequency }
     }
+
+    pub fn to_series(&self) -> Series {
+        Series::new(self.name(), self.samples())
+    }
 }
 
 #[pyclass]
@@ -74,5 +79,11 @@ impl ChannelDataIterator {
     }
     fn __next__(mut slf: PyRefMut<'_, Self>) -> Option<(f64, f64)> {
         slf.iter.next()
+    }
+}
+
+unsafe impl IntoSeries for ChannelPy {
+    fn into_series(self) -> Series {
+        self.to_series()
     }
 }
