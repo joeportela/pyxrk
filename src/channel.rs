@@ -1,7 +1,11 @@
 use std::{iter::Zip, vec};
 
-use polars::prelude::*;
-use pyo3::{exceptions::PyValueError, prelude::*};
+use arrow2::{
+    array::Float64Array,
+    datatypes::{DataType, Field},
+    ffi,
+};
+use pyo3::{exceptions::PyValueError, ffi::Py_uintptr_t, prelude::*};
 use xdrk::Channel;
 
 #[pyclass(name = "Channel")]
@@ -53,6 +57,28 @@ impl ChannelPy {
             iter: data.clone().into_iter(),
         }
     }
+
+    pub fn to_array(&self, py: Python) -> PyResult<PyObject> {
+        let raw_array = Float64Array::from_vec(self.samples());
+
+        let schema = Box::new(ffi::export_field_to_c(&Field::new(
+            self.name(),
+            DataType::Float64,
+            false,
+        )));
+        let array = Box::new(ffi::export_array_to_c(raw_array.boxed()));
+
+        let array_ptr: *const ffi::ArrowArray = &*array;
+        let schema_ptr: *const ffi::ArrowSchema = &*schema;
+
+        let pa = py.import("pyarrow")?;
+        let array = pa.getattr("Array")?.call_method1(
+            "_import_from_c",
+            (array_ptr as Py_uintptr_t, schema_ptr as Py_uintptr_t),
+        )?;
+
+        Ok(array.to_object(py))
+    }
 }
 
 impl ChannelPy {
@@ -60,10 +86,6 @@ impl ChannelPy {
         // frquency is static, so only compute it once
         let frequency = channel.frequency();
         Self { channel, frequency }
-    }
-
-    pub fn to_series(&self) -> Series {
-        Series::new(self.name(), self.samples())
     }
 }
 
@@ -79,11 +101,5 @@ impl ChannelDataIterator {
     }
     fn __next__(mut slf: PyRefMut<'_, Self>) -> Option<(f64, f64)> {
         slf.iter.next()
-    }
-}
-
-unsafe impl IntoSeries for ChannelPy {
-    fn into_series(self) -> Series {
-        self.to_series()
     }
 }

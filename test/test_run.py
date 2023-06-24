@@ -1,5 +1,6 @@
 import datetime
 
+import pyarrow
 import pytest
 import pyxrk
 
@@ -124,6 +125,8 @@ def test_combo_lap_channels():
     assert lap_oil_temp_sample_count == full_oil_temp_channel.sample_count()
 
 
-def test_dataframe():
+def test_channel_to_arrow_array():
     run = pyxrk.load_run(TEST_FILE)
-    run.to_df()
+    channel = run.get_channel("GPS Speed", 2)
+    array = channel.to_array()
+    assert isinstance(array, pyarrow.FloatingPointArray)
