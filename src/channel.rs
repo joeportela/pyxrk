@@ -1,11 +1,6 @@
+use super::utils::to_array;
+use pyo3::{exceptions::PyValueError, prelude::*};
 use std::{iter::Zip, vec};
-
-use arrow2::{
-    array::Float64Array,
-    datatypes::{DataType, Field},
-    ffi,
-};
-use pyo3::{exceptions::PyValueError, ffi::Py_uintptr_t, prelude::*};
 use xdrk::Channel;
 
 #[pyclass(name = "Channel")]
@@ -58,26 +53,11 @@ impl ChannelPy {
         }
     }
 
-    pub fn to_array(&self, py: Python) -> PyResult<PyObject> {
-        let raw_array = Float64Array::from_vec(self.samples());
-
-        let schema = Box::new(ffi::export_field_to_c(&Field::new(
-            self.name(),
-            DataType::Float64,
-            false,
-        )));
-        let array = Box::new(ffi::export_array_to_c(raw_array.boxed()));
-
-        let array_ptr: *const ffi::ArrowArray = &*array;
-        let schema_ptr: *const ffi::ArrowSchema = &*schema;
-
-        let pa = py.import("pyarrow")?;
-        let array = pa.getattr("Array")?.call_method1(
-            "_import_from_c",
-            (array_ptr as Py_uintptr_t, schema_ptr as Py_uintptr_t),
-        )?;
-
-        Ok(array.to_object(py))
+    pub fn get_timestamps_array(&self, py: Python) -> PyResult<PyObject> {
+        to_array("Time", self.timestamps(), py)
+    }
+    pub fn get_samples_array(&self, py: Python) -> PyResult<PyObject> {
+        to_array(self.name(), self.samples(), py)
     }
 }
 

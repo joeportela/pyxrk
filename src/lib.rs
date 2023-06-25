@@ -1,5 +1,6 @@
 mod channel;
 mod run;
+mod utils;
 use pyo3::prelude::*;
 
 /// A Python module implemented in Rust.
