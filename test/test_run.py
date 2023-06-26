@@ -2,7 +2,7 @@ import datetime
 
 import pyarrow
 import pytest
-import pyxrk
+import pyxrk_raw as pyxrk
 
 TEST_FILE = "./test/data/test.xrk"
 
