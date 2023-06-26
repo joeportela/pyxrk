@@ -3,3 +3,4 @@
 __pycache/
 target/
 .vscode/
+pyxrk/*.so

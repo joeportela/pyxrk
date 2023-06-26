@@ -2,19 +2,20 @@ import datetime
 
 import pyarrow
 import pytest
-import pyxrk_raw as pyxrk
+
+from pyxrk import pyxrk_raw
 
 TEST_FILE = "./test/data/test.xrk"
 
 
 def test_load_run():
-    pyxrk.load_run(TEST_FILE)
+    pyxrk_raw.load_run(TEST_FILE)
     with pytest.raises(ValueError, match="does not exist"):
-        pyxrk.load_run("./non-existant-file.xrk")
+        pyxrk_raw.load_run("./non-existant-file.xrk")
 
 
 def test_run_attributes() -> None:
-    run = pyxrk.load_run(TEST_FILE)
+    run = pyxrk_raw.load_run(TEST_FILE)
     assert run.lap_count == 7
     assert run.championship == ""
     assert run.track == "Watkins Glen"
@@ -25,7 +26,7 @@ def test_run_attributes() -> None:
 
 
 def test_channel_names() -> None:
-    run = pyxrk.load_run(TEST_FILE)
+    run = pyxrk_raw.load_run(TEST_FILE)
     assert len(run.channel_names) == 57
     assert run.channels_count == 57
     assert run.get_channel_idx("TRQ_LOSS") == 13
@@ -37,7 +38,7 @@ def test_channel_names() -> None:
 
 
 def test_channel_unit() -> None:
-    run = pyxrk.load_run(TEST_FILE)
+    run = pyxrk_raw.load_run(TEST_FILE)
     assert run.get_channel_unit("OIL_TEMP") == "C"
     assert run.get_channel_unit("GPS Speed") == "m/s"
     with pytest.raises(ValueError, match="Channel not found"):
@@ -49,7 +50,7 @@ def test_channel_unit() -> None:
 
 
 def test_channel() -> None:
-    run = pyxrk.load_run(TEST_FILE)
+    run = pyxrk_raw.load_run(TEST_FILE)
     oil_temp_channel = run.get_channel("OIL_TEMP")
     assert oil_temp_channel.name == "OIL_TEMP"
     assert oil_temp_channel.unit == "C"
@@ -83,7 +84,7 @@ def test_channel() -> None:
 
 
 def test_channel_lap() -> None:
-    run = pyxrk.load_run(TEST_FILE)
+    run = pyxrk_raw.load_run(TEST_FILE)
     oil_temp_channel = run.get_channel("OIL_TEMP", 2)
     assert oil_temp_channel.name == "OIL_TEMP"
     assert oil_temp_channel.unit == "C"
@@ -113,7 +114,7 @@ def test_combo_lap_channels():
     Test that the total sample count is equal to the sum
     of the sample counts from each lap.
     """
-    run = pyxrk.load_run(TEST_FILE)
+    run = pyxrk_raw.load_run(TEST_FILE)
     full_oil_temp_channel = run.get_channel("OIL_TEMP")
     assert full_oil_temp_channel.sample_count() == 2511
 
@@ -126,14 +127,14 @@ def test_combo_lap_channels():
 
 
 def test_channel_to_arrow_array():
-    run = pyxrk.load_run(TEST_FILE)
+    run = pyxrk_raw.load_run(TEST_FILE)
     channel = run.get_channel("GPS Speed", 2)
     array = channel.get_samples_array()
     assert isinstance(array, pyarrow.FloatingPointArray)
 
 
 # class MyRun:
-#     def __init__(self, run: pyxrk.Run):
+#     def __init__(self, run: pyxrk_raw.Run):
 #         self.run = run
 
 #     def get_lap_table(self, lap_num: int, sync_on: str = "GPS Speed") -> pyarrow.Table:
@@ -154,7 +155,7 @@ def test_channel_to_arrow_array():
 
 
 # def test_lap_table():
-#     run = pyxrk.load_run(TEST_FILE)
+#     run = pyxrk_raw.load_run(TEST_FILE)
 #     myrun = MyRun(run)
 #     table = myrun.get_lap_table(1)
 #     table.
