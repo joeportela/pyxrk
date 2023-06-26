@@ -143,10 +143,6 @@ impl RunPy {
             Err(_) => Err(PyValueError::new_err("")),
         }
     }
-
-    // pub fn to_df(&self) -> PyResult<PyDataFrame> {
-    //     Ok(PyDataFrame(self.to_dataframe()))
-    // }
 }
 
 #[pyfunction]
