@@ -1,4 +1,6 @@
-from typing import Any, Dict, Optional
+from __future__ import annotations
+
+from typing import Dict, Optional
 
 import pyarrow  # type: ignore
 
@@ -24,13 +26,16 @@ class Lap:
         }
         units: Dict[str, str] = {"Time": "s"}
         for channel_name in self._run.channel_names:
-            base_channel = self._run.get_channel(channel_name, self.lap_idx)
-            synced_channel = base_channel.sync_with(sync_channel)
-            columns[channel_name] = synced_channel.get_samples_array()
-            units[channel_name] = synced_channel.unit
+            try:
+                base_channel = self._run.get_channel(channel_name, self.lap_idx)
+                synced_channel = base_channel.sync_with(sync_channel)
+                columns[channel_name] = synced_channel.get_samples_array()
+                units[channel_name] = synced_channel.unit
+            # TODO: Make this error more specific, we're ignoring empty channels
+            except ValueError:
+                continue
 
-        metadata: Dict[str, Any] = {"units": units}
-        return pyarrow.Table.from_pydict(columns, metadata=metadata)
+        return pyarrow.Table.from_pydict(columns, metadata=units)
 
 
 class Run:
@@ -59,8 +64,8 @@ class Run:
         for lap_num in range(1, self.lap_count + 1):
             lap_table = self.get_lap(lap_num).to_table()
             # Add lap number column to first position
-            lap_table.add_column(
-                0, "Lap", pyarrow.array([lap_num] * len(lap_table), pyarrow.int32())
+            lap_table = lap_table.add_column(
+                0, "Lap", pyarrow.array([lap_num] * len(lap_table), pyarrow.int16())
             )
             lap_tables.append(lap_table)
         return pyarrow.concat_tables(lap_tables)
