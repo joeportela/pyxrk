@@ -1,6 +1,6 @@
-use std::{iter::Zip, vec};
-
+use super::utils::to_array;
 use pyo3::{exceptions::PyValueError, prelude::*};
+use std::{iter::Zip, vec};
 use xdrk::Channel;
 
 #[pyclass(name = "Channel")]
@@ -51,6 +51,13 @@ impl ChannelPy {
         ChannelDataIterator {
             iter: data.clone().into_iter(),
         }
+    }
+
+    pub fn get_timestamps_array(&self, py: Python) -> PyResult<PyObject> {
+        to_array("Time", self.timestamps(), py)
+    }
+    pub fn get_samples_array(&self, py: Python) -> PyResult<PyObject> {
+        to_array(self.name(), self.samples(), py)
     }
 }
 

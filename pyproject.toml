@@ -11,6 +11,7 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
+dependencies = ['pyarrow']
 
 [project.optional-dependencies]
 test = [
@@ -23,6 +24,7 @@ test = [
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
+module-name = "pyxrk.pyxrk_raw"
 
 [tool.black]
 line-length = 88
