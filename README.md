@@ -1,5 +1,5 @@
 # pyxrk
-Python package for reading .xrk files. The `Run` class can be used to turn .xrk data files into pyarrow Tables. The `pyxrk_raw` submodule wraps much of the functionality from the rust library [xdrk](https://github.com/bmc-labs/xdrk) while adding some convenience methods.
+Python package for reading .xrk files. The `Run` class can be used to turn .xrk data files into pyarrow Tables.
 
 ---
 
@@ -21,7 +21,9 @@ To load an .xrk file into a pyarrow Table:
 ```
 Channel unit information can be found in the arrow table metadata.
 
+---
 
+ The `pyxrk_raw` submodule wraps much of the functionality from the rust library [xdrk](https://github.com/bmc-labs/xdrk) while adding some convenience methods.
 To use the raw submodule for reading .xrk files:
 
 ```pycon
@@ -43,7 +45,7 @@ To use the raw submodule for reading .xrk files:
 (0.0, 0.1846618503332138)
 ```
 
-In lieau of better API documentation, see `pyxrk.pyi` for full interface and `test/test_run.py` for more example usage.
+In lieau of better API documentation, see `pyxrk_raw.pyi` for full interface and tests for more example usage.
 
 
 ## Compatibility
