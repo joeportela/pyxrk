@@ -131,31 +131,3 @@ def test_channel_to_arrow_array():
     channel = run.get_channel("GPS Speed", 2)
     array = channel.get_samples_array()
     assert isinstance(array, pyarrow.FloatingPointArray)
-
-
-# class MyRun:
-#     def __init__(self, run: pyxrk_raw.Run):
-#         self.run = run
-
-#     def get_lap_table(self, lap_num: int, sync_on: str = "GPS Speed") -> pyarrow.Table:
-#         sync_channel = self.run.get_channel(channel_name)
-#         # Initialize with the timestamps from the sync channel
-#         channel_data: dict[str, pyarrow.Array] = {"Time": pyarrow.Array.from_buffers}
-#         channel_meta: dict[str, str] = {"Time": "s"}
-#         for channel_name in self.run.channel_names:
-#             try:
-#                 channel = self.run.get_channel(channel_name, lap_num)
-#                 channel = channel.sync_with(sync_channel)
-#             except ValueError:
-#                 pass
-#             channel_data[channel_name] = channel.to_array()
-#             channel_meta[channel_name] = channel.unit
-#         table = pyarrow.Table.from_pydict(channel_data, metadata=channel_meta)
-#         return table
-
-
-# def test_lap_table():
-#     run = pyxrk_raw.load_run(TEST_FILE)
-#     myrun = MyRun(run)
-#     table = myrun.get_lap_table(1)
-#     table.
